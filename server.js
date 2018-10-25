@@ -3,15 +3,20 @@ const app = express();
 
 const config = require('./config');
 const port = config.port || 3000;
+const bodyParser = require('body-parser');
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+//app.use(express.json());
+//app.use(express.urlencoded({ extended: false }));
+
+app.use(bodyParser.text());
 
 let positions = {}; 
 
 // id|latx_longy_role,id|...
 app.post('/update', (req, res) => {
-	const positionString = req.body.payload;
+	const positionString = req.body;
+	console.log(req);
+	console.log(positionString);
 	const devices = positionString.split(",");
 	for (device in devices) {
 		const id = devices[device].split("|")[0];
