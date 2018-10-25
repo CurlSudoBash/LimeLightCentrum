@@ -15,16 +15,22 @@ let positions = {};
 // id|latx_longy_role,id|...
 app.post('/update', (req, res) => {
 	const positionString = req.body;
-	console.log(req);
 	console.log(positionString);
-	const devices = positionString.split(",");
-	for (device in devices) {
-		const id = devices[device].split("|")[0];
-		const latx = devices[device].split("|")[1].split("_")[0];
-		const longy = devices[device].split("|")[1].split("_")[1];
-		const role = devices[device].split("|")[1].split("_")[2];
-		positions[id] = { latx, longy, role };
-	};
+	if (positionString == "") {
+		return res.send(generateString());
+	}
+	try {
+		const devices = positionString.split(",");
+		for (device in devices) {
+			const id = devices[device].split("|")[0];
+			const latx = devices[device].split("|")[1].split("_")[0];
+			const longy = devices[device].split("|")[1].split("_")[1];
+			const role = devices[device].split("|")[1].split("_")[2];
+			positions[id] = { latx, longy, role };
+		};
+	} catch (err) {
+		console.log(err);
+	}
 	res.send(generateString());
 });
 
