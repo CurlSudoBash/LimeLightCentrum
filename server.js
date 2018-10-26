@@ -11,6 +11,7 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.text());
 
 let positions = {}; 
+let events = {"Event1":"2_3"};
 
 // id|latx_longy_role,id|...
 app.post('/update', (req, res) => {
@@ -33,6 +34,15 @@ app.post('/update', (req, res) => {
 	}
 	res.send(generateString());
 });
+
+app.get('/events', (req, res) =>  {
+	let output = "";
+	Object.keys(events).forEach(function(key) {
+	    value = events[key];
+	    output+= key + "|" + value + ","
+	});
+	res.send(output);
+});	
 
 generateString = () => {
 	let output = "";
