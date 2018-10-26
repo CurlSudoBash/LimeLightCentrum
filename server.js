@@ -7,12 +7,51 @@ const bodyParser = require('body-parser');
 
 //app.use(express.json());
 //app.use(express.urlencoded({ extended: false }));
+//Latitude_Longitude_Victim_Scout_Medic_Lifter
 
 app.use(bodyParser.text());
 
-let positions = {}; 
-let events = {"Event1":"2_3"};
+let positions = {
+       device1: {
+               latx: "29",
+               longy: "77",
+               role: "S"
+       },
+       device2: {
+               latx: "30",
+               longy: "78",
+               role: "V"
+       },
+       device3: {
+               latx: "28",
+               longy: "76",
+               role: "L"
+       },
+       device4: {
+               latx: "28.5",
+               longy: "78",
+               role: "M"
+       },
+       device5: {
+               latx: "28.12",
+               longy: "78.22",
+               role: "V"
+       }
+};
 
+let events = {
+	KeralaFlood:"29.8775_31.8777_Alphadose_Flood",
+	NorthIndiaHailstorm: "28.8775_30.8777_Alphadose_Hailstorm",
+	NorthIndiaCyclone:"30.8775_32.8777_Alphadose_Cyclone",
+	AssamEarthquake:"29.8775_31.8777_Alphadose_Earthquake",
+	SouthIndiaCyclone:"30.8775_32.8777_Alphadose_Cyclone",
+	ChennaiEarthquake: "28.8775_30.8777_Alphadose_Chennai",
+	GujaratFlood:"29.8775_31.8777_Alphadose_Flood",
+	WesternIndiaCyclone:"30.8775_32.8777_Alphadose_Cyclone",
+	OrissaHailstorm: "28.8775_30.8777_Alphadose_Hailstorm"
+};
+
+//
 // id|latx_longy_role,id|...
 app.post('/update', (req, res) => {
 	const positionString = req.body;
@@ -45,6 +84,7 @@ app.post('/events', (req, res) => {
 	if(typeof req.body == "undefined") return res.send(generateEventString());
 	const eventId = event.split("|")[0];
 	events[eventId] = event.split("|")[1];
+	console.log(events);
 	return res.send(generateEventString());
 })
 
