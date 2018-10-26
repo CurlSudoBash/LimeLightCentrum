@@ -36,13 +36,15 @@ app.post('/update', (req, res) => {
 });
 
 app.get('/events', (req, res) =>  {
-	let output = "";
-	Object.keys(events).forEach(function(key) {
-	    value = events[key];
-	    output+= key + "|" + value + ","
-	});
-	res.send(output);
-});	
+	return res.send(generateEventString());
+});
+
+app.post('/events', (req, res) => {
+	const event = req.body;
+	const eventId = event.split("|")[0];
+	events[eventId] = event.split("|")[1];
+	return res.send(generateEventString());
+})
 
 generateString = () => {
 	let output = "";
@@ -51,5 +53,15 @@ generateString = () => {
 	}
 	return output;
 }
+
+generateEventString = () => {
+	let output = "";
+	Object.keys(events).forEach(function(key) {
+	    value = events[key];
+	    output+= key + "|" + value + ","
+	});
+	return output;
+}
+
 
 app.listen(port, () => console.log("Listening at port " + port));
