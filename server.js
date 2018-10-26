@@ -23,7 +23,7 @@ app.post('/update', (req, res) => {
 	try {
 		const devices = positionString.split(",");
 		for (device in devices) {
-			if(device == "") break;
+			if(typeof devices[device].split("|")[1] == "undefined") break;
 			const id = devices[device].split("|")[0];
 			const latx = devices[device].split("|")[1].split("_")[0];
 			const longy = devices[device].split("|")[1].split("_")[1];
@@ -42,6 +42,7 @@ app.get('/events', (req, res) =>  {
 
 app.post('/events', (req, res) => {
 	const event = req.body;
+	if(typeof req.body == "undefined") return res.send(generateEventString());
 	const eventId = event.split("|")[0];
 	events[eventId] = event.split("|")[1];
 	return res.send(generateEventString());
