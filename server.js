@@ -23,6 +23,7 @@ app.post('/update', (req, res) => {
 	try {
 		const devices = positionString.split(",");
 		for (device in devices) {
+			if(device == "") break;
 			const id = devices[device].split("|")[0];
 			const latx = devices[device].split("|")[1].split("_")[0];
 			const longy = devices[device].split("|")[1].split("_")[1];
