@@ -39,6 +39,15 @@ let positions = {
        }
 };
 
+let cluster = {
+	"29.0_77.0" : {
+		V: 2,
+		S: 1,
+		M: 1,
+		L: 1
+	}
+};
+
 let events = {
 	KeralaFlood:"29.8775_31.8777_Alphadose_Flood",
 	NorthIndiaHailstorm: "28.8775_30.8777_Alphadose_Hailstorm",
@@ -87,6 +96,30 @@ app.post('/events', (req, res) => {
 	console.log(events);
 	return res.send(generateEventString());
 })
+
+app.get('/cluster', (req, res) => {
+	let clusterId = req.query.id;
+	console.log(clusterId);
+	if(typeof cluster[clusterId] == "undefined") return res.send("");
+	clusterInfo = cluster[clusterId];
+	res.send(clusterInfo.V+"_"+clusterInfo.S+"_"+clusterInfo.M+"_"+clusterInfo.L);
+});
+
+app.post('/cluster', (req, res) => {
+	let body = req.body.split("|");
+	let clusterId = body[0];
+	let role = body[1];
+	if(typeof cluster[clusterId] == "undefined") {
+		cluster[clusterId] = {
+			V: 0,
+			S: 0,
+			M: 0,
+			L: 0
+		}
+	}
+	cluster[clusterId][role]++;
+	console.log(cluster);
+});
 
 generateString = () => {
 	let output = "";
