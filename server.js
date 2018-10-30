@@ -1,9 +1,13 @@
 const express = require('express');
 const app = express();
 
-const config = require('./config');
+const config = require('./config.json');
 const port = config.port || 3000;
 const bodyParser = require('body-parser');
+
+const accountSid = config.accountSid;
+const authToken = config.authToken;
+const client = require('twilio')(accountSid, authToken);
 
 //app.use(express.json());
 //app.use(express.urlencoded({ extended: false }));
@@ -86,6 +90,28 @@ app.post('/update', (req, res) => {
 
 app.get('/events', (req, res) =>  {
 	return res.send(generateEventString());
+});
+
+app.post('/reinforce', (req, res) => {
+
+	let body = req.body.split("_");
+
+	let message = `Requesting reinforcements at:-\n
+		Latitude: ${body[0]}
+		Longitude: ${body[1]}\n
+		Reinforcements Required:-\n
+		Scouts: ${body[2]}
+		Medics: ${body[3]}
+		Lifters: ${body[4]}`;
+
+	client.messages
+	  .create({
+	     body: message,
+	     from: config.number,
+	     to: '+918249009191'
+	   })
+	  .then(message => console.log(message.sid))
+	  .done();
 });
 
 app.post('/events', (req, res) => {
