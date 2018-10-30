@@ -98,7 +98,8 @@ app.post('/reinforce', (req, res) => {
 
 	let message = `Requesting reinforcements at:-\n
 		Latitude: ${body[0]}
-		Longitude: ${body[1]}\n
+		Longitude: ${body[1]}
+		Indian Institute of Technology Roorkee\n
 		Reinforcements Required:-\n
 		Scouts: ${body[2]}
 		Medics: ${body[3]}
