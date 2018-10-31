@@ -4,10 +4,13 @@ const app = express();
 const config = require('./config.json');
 const port = config.port || 3000;
 const bodyParser = require('body-parser');
+const Request = require('request');
 
 const accountSid = config.accountSid;
 const authToken = config.authToken;
 const client = require('twilio')(accountSid, authToken);
+
+const base_url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&key=AIzaSyCJ08SSF3AzFrnJUz4RrUAlFE5CxvBqALk";
 
 //app.use(express.json());
 //app.use(express.urlencoded({ extended: false }));
@@ -94,25 +97,36 @@ app.get('/events', (req, res) =>  {
 
 app.post('/reinforce', (req, res) => {
 
-	let body = req.body.split("_");
+	let body1 = req.body.split("_");
+	let coordinates = body1[0] + "," + body1[1];
+	const url = `http://dev.virtualearth.net/REST/v1/Locations/${coordinates}?o=json&key=${config.bing_key}`;
+	
+	Request.get(url, (error, response, body) => {
+		console.log(body);
+		body = JSON.parse(body);
+		let locality = body.resourceSets[0].resources[0].address.locality;
+		let district = body.resourceSets[0].resources[0].address.adminDistrict;
 
-	let message = `Requesting reinforcements at:-\n
-		Latitude: ${body[0]}
-		Longitude: ${body[1]}
-		Indian Institute of Technology Roorkee\n
+		let message = `\nRequesting reinforcements at:-\n
+		Latitude: ${body1[0]}
+		Longitude: ${body1[1]}
+		${locality}, ${district}\n
 		Reinforcements Required:-\n
-		Scouts: ${body[2]}
-		Medics: ${body[3]}
-		Lifters: ${body[4]}`;
+		Scouts: ${body1[2]}
+		Medics: ${body1[3]}
+		Lifters: ${body1[4]}`;
 
-	client.messages
-	  .create({
-	     body: message,
-	     from: config.number,
-	     to: '+918249009191'
-	   })
-	  .then(message => console.log(message.sid))
-	  .done();
+		console.log(message);
+		client.messages
+		  .create({
+		     body: message,
+		     from: config.number,
+		     to: '+918249009191'
+		   })
+		  .then(message => console.log(message.sid))
+		  .done();
+	});
+	
 });
 
 app.post('/events', (req, res) => {
