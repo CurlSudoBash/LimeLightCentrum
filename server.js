@@ -10,8 +10,6 @@ const accountSid = config.accountSid;
 const authToken = config.authToken;
 const client = require('twilio')(accountSid, authToken);
 
-const base_url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&key=AIzaSyCJ08SSF3AzFrnJUz4RrUAlFE5CxvBqALk";
-
 //app.use(express.json());
 //app.use(express.urlencoded({ extended: false }));
 //Latitude_Longitude_Victim_Scout_Medic_Lifter
@@ -66,6 +64,11 @@ let events = {
 	WesternIndiaCyclone:"30.8775_32.8777_Alphadose_Cyclone",
 	OrissaHailstorm: "28.8775_30.8777_Alphadose_Hailstorm"
 };
+
+
+app.get('/', (req, res) => {
+	res.send("It Works!!!");
+});
 
 //
 // id|latx_longy_role,id|...
