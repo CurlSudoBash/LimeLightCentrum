@@ -15,6 +15,7 @@ const client = require('twilio')(accountSid, authToken);
 //Latitude_Longitude_Victim_Scout_Medic_Lifter
 
 app.use(bodyParser.text());
+app.use(express.static('public'))
 
 let positions = {
        device1: {
@@ -67,7 +68,7 @@ let events = {
 
 
 app.get('/', (req, res) => {
-	res.send("It Works!!!");
+	res.sendFile('/index.html', {root: __dirname })
 });
 
 //

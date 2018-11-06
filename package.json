@@ -1,0 +1,26 @@
+{
+  "name": "limelightcentrum",
+  "version": "1.0.0",
+  "description": "Central Server for the LimeLight ecosystem",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.16.4",
+    "request": "^2.88.0",
+    "twilio": "^3.23.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "npm test",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CurlSudoBash/LimeLightCentrum.git"
+  },
+  "author": "Nikhil Kaushik",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CurlSudoBash/LimeLightCentrum/issues"
+  },
+  "homepage": "https://github.com/CurlSudoBash/LimeLightCentrum#readme"
+}
