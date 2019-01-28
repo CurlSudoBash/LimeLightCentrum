@@ -4,7 +4,7 @@ const app = express();
 const config = require('./config.json');
 const port = config.port || 3000;
 const bodyParser = require('body-parser');
-const Request = require('request');
+const Request = require('request-promise');
 
 const accountSid = config.accountSid;
 const authToken = config.authToken;
@@ -66,6 +66,43 @@ let events = {
 	OrissaHailstorm: "28.8775_30.8777_Alphadose_Hailstorm"
 };
 
+function generateString() {
+	let output = "";
+	for (id in positions) {
+		output += id + "|" + positions[id].latx + "_" + positions[id].longy + "_" + positions[id].role + ",";
+	}
+	return output;
+}
+
+function generateEventString() {
+	let output = "";
+	Object.keys(events).forEach(function(key) {
+	    value = events[key];
+	    output+= key + "|" + value + ","
+	});
+	return output;
+}
+
+function sendSMS(message, number) {
+	console.log(message);
+	client.messages
+	  .create({
+	     body: message,
+	     from: config.number,
+	     to: number
+	   })
+	  .then(message => console.log(message.sid))
+	  .done();
+}
+
+async function getLocality(coordinates) {
+	const url = `http://dev.virtualearth.net/REST/v1/Locations/${coordinates}?o=json&key=${config.bing_key}`;
+	return Request(url).then(body => {
+		body = JSON.parse(body);
+		let locality = body.resourceSets[0].resources[0].name;
+		return locality;
+	})
+}
 
 app.get('/', (req, res) => {
 	res.sendFile('/index.html', {root: __dirname })
@@ -99,38 +136,45 @@ app.get('/events', (req, res) =>  {
 	return res.send(generateEventString());
 });
 
-app.post('/reinforce', (req, res) => {
+app.post('/reinforce', async (req, res) => {
+	let body1 = req.body.split("_");
+	let coordinates = body1[0] + "," + body1[1];
+	
+	const locality = await getLocality(coordinates);
+	
+	let message = `\nRequesting reinforcements at:-\n
+	Latitude: ${body1[0]}
+	Longitude: ${body1[1]}
+	${locality}\n
+	Reinforcements Required:-\n
+	Scouts: ${body1[2]}
+	Medics: ${body1[3]}
+	Lifters: ${body1[4]}`;	
+
+	sendSMS(message, '+918249009191');
+
+	res.send({
+		"success": true
+	});
+});
+
+app.post('/spot', async (req, res) => {
 
 	let body1 = req.body.split("_");
 	let coordinates = body1[0] + "," + body1[1];
-	const url = `http://dev.virtualearth.net/REST/v1/Locations/${coordinates}?o=json&key=${config.bing_key}`;
 	
-	Request.get(url, (error, response, body) => {
-		console.log(body);
-		body = JSON.parse(body);
-		let locality = body.resourceSets[0].resources[0].address.locality;
-		let district = body.resourceSets[0].resources[0].address.adminDistrict;
+	const locality = await getLocality(coordinates);
 
-		let message = `\nRequesting reinforcements at:-\n
-		Latitude: ${body1[0]}
-		Longitude: ${body1[1]}
-		${locality}, ${district}\n
-		Reinforcements Required:-\n
-		Scouts: ${body1[2]}
-		Medics: ${body1[3]}
-		Lifters: ${body1[4]}`;
+	let message = `\nVictims spotted at:-\n
+	Latitude: ${body1[0]}
+	Longitude: ${body1[1]}\n
+	${locality}\n`;
 
-		console.log(message);
-		client.messages
-		  .create({
-		     body: message,
-		     from: config.number,
-		     to: '+918249009191'
-		   })
-		  .then(message => console.log(message.sid))
-		  .done();
+	sendSMS(message, '+918249009191');
+
+	res.send({
+		"success": true
 	});
-	
 });
 
 app.post('/events', (req, res) => {
@@ -165,23 +209,5 @@ app.post('/cluster', (req, res) => {
 	cluster[clusterId][role]++;
 	console.log(cluster);
 });
-
-generateString = () => {
-	let output = "";
-	for (id in positions) {
-		output += id + "|" + positions[id].latx + "_" + positions[id].longy + "_" + positions[id].role + ",";
-	}
-	return output;
-}
-
-generateEventString = () => {
-	let output = "";
-	Object.keys(events).forEach(function(key) {
-	    value = events[key];
-	    output+= key + "|" + value + ","
-	});
-	return output;
-}
-
 
 app.listen(port, () => console.log("Listening at port " + port));

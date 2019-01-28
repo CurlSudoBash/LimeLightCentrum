@@ -6,6 +6,7 @@
   "dependencies": {
     "express": "^4.16.4",
     "request": "^2.88.0",
+    "request-promise": "^4.2.2",
     "twilio": "^3.23.2"
   },
   "devDependencies": {},
