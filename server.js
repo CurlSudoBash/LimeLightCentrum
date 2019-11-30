@@ -1,13 +1,12 @@
 const express = require('express');
 const app = express();
 
-const config = require('./config.json');
-const port = config.port || 3000;
+const port = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
 const Request = require('request-promise');
 
-const accountSid = config.accountSid;
-const authToken = config.authToken;
+const accountSid = process.env.accountSid;
+const authToken = process.env.authToken;
 const client = require('twilio')(accountSid, authToken);
 
 //app.use(express.json());
@@ -88,7 +87,7 @@ function sendSMS(message, number) {
 	client.messages
 	  .create({
 	     body: message,
-	     from: config.number,
+	     from: process.env.number,
 	     to: number
 	   })
 	  .then(message => console.log(message.sid))
@@ -96,7 +95,7 @@ function sendSMS(message, number) {
 }
 
 async function getLocality(coordinates) {
-	const url = `http://dev.virtualearth.net/REST/v1/Locations/${coordinates}?o=json&key=${config.bing_key}`;
+	const url = `http://dev.virtualearth.net/REST/v1/Locations/${coordinates}?o=json&key=${process.env.bing_key}`;
 	return Request(url).then(body => {
 		body = JSON.parse(body);
 		let locality = body.resourceSets[0].resources[0].name;
